@@ -135,7 +135,7 @@ This project is fully compatible with **Vercel's Next.js 14 App Router environme
 ### **Automatic Deployment (Recommended)**
 
 1. Push your code to GitHub
-2. Go to [https://vercel.com]([https://vercel.com](https://devsentinel-ai.vercel.app/))
+2. Go to [https://vercel.com](https://devsentinel-ai.vercel.app/)
 3. Import your GitHub repository
 4. Vercel auto-detects the Next.js config
 5. Click **Deploy**
