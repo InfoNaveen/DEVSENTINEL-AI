@@ -21,29 +21,29 @@ The prototype demonstrates the Sentinel module fully, with partial integration f
 
 ## 🛡️ Core Features
 
-### **Enterprise Security Dashboard**
+### Enterprise Security Dashboard
 - Modern sidebar & navbar  
 - Dark mode optimized  
 - Fully responsive  
 - Built with Next.js 14 + Tailwind + shadcn/ui  
 
-### **Upload & Scan**
+### Upload & Scan
 - Drag-and-drop ZIP upload  
 - GitHub repo ingestion  
 - Real-time scanning feedback  
 
-### **Security Findings & Auto-Patching**
+### Security Findings & Auto-Patching
 - Severity-based vulnerability cards  
 - Detailed findings table  
-- Patch diff viewer (before/after)  
+- Patch diff viewer  
 - Export patched repo as ZIP  
 
-### **Security Timeline**
+### Security Timeline
 - Chronological scan history  
 - Patch events  
 - Security posture trends  
 
-### **Agent Orchestration (MVP)**
+### Agent Orchestration (MVP)
 - Sequential flow (Architect → Builder → Critic → Sentinel)  
 - Agent execution logs  
 - Builder/Critic sample outputs  
@@ -101,14 +101,23 @@ app/api/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started Locally
+
+Install dependencies:
 
 ```bash
 npm install
-npm run dev
 ````
 
-Visit: It will be deployed at port 3000 and visit it locally
+Run development server:
+
+```bash
+npm run dev
+```
+
+Project runs at:
+
+**[http://localhost:3000](http://localhost:3000)**
 
 ### Production Build
 
@@ -119,14 +128,45 @@ npm start
 
 ---
 
+## 🔧 Deploying to Vercel
+
+This project is fully compatible with **Vercel's Next.js 14 App Router environment**.
+
+### **Automatic Deployment (Recommended)**
+
+1. Push your code to GitHub
+2. Go to [https://vercel.com](https://vercel.com)
+3. Import your GitHub repository
+4. Vercel auto-detects the Next.js config
+5. Click **Deploy**
+
+### **Manual Deployment Using Vercel CLI**
+
+```bash
+npm install -g vercel
+vercel login
+vercel            # preview deployment
+vercel --prod     # production deployment
+```
+
+If Vercel fails to deploy, check:
+
+* Missing dependencies in `package.json`
+* Invalid `.env` files
+* Mismatched or broken markdown blocks
+* Incorrect import paths
+* Server route errors under `/app/api/*`
+
+---
+
 ## 📌 Development Guidelines
 
 * Dark mode support throughout
 * Mobile-first responsive design
 * Tailwind + shadcn for consistent UI
-* TypeScript everywhere for safety
-* Sentinel scanning logic in `/lib/sentinel.ts`
-* Do not commit `.env` files or secrets
+* TypeScript strict mode enabled
+* Sentinel scanning logic located in `/lib/sentinel.ts`
+* DO NOT commit `.env` files or secrets
 
 ---
 
@@ -156,4 +196,3 @@ All rights reserved — not open-source for production use.
 * LangChain / AutoGen concepts
 
 ```
-
