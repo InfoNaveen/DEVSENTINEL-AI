@@ -1,139 +1,159 @@
-<<<<<<< HEAD
-# DevSentinel AI - Enterprise Security Dashboard
 
-A premium, enterprise-grade security dashboard for automated vulnerability scanning and auto-patching.
+# DevSentinel AI — Secure-by-Design Autonomous Development Platform
 
-## Folder Structure
+DevSentinel AI is a next-generation autonomous development platform that transforms user stories and code repositories into secure, deployable applications using a collaborative multi-agent LLM workflow. It scans repositories, detects vulnerabilities, applies auto-patches, and provides an enterprise-grade dashboard for full security visibility.
+
+---
+
+## 🔥 Key Capabilities
+
+### 🧠 Multi-Agent Architecture
+DevSentinel AI uses four collaborating agents:
+
+- **Architect Agent** — Converts Azure DevOps user stories into architecture plans  
+- **Builder Agent** — Generates initial full-stack code  
+- **Critic Agent** — Produces test stubs and basic validation  
+- **Sentinel Agent** — Performs security scanning and automated patching  
+
+The prototype demonstrates the Sentinel module fully, with partial integration for Architect/Builder/Critic via LLM workflows.
+
+---
+
+## 🛡️ Core Features
+
+### **Enterprise Security Dashboard**
+- Modern sidebar & navbar  
+- Dark mode optimized  
+- Fully responsive  
+- Built with Next.js 14 + Tailwind + shadcn/ui  
+
+### **Upload & Scan**
+- Drag-and-drop ZIP upload  
+- GitHub repo ingestion  
+- Real-time scanning feedback  
+
+### **Security Findings & Auto-Patching**
+- Severity-based vulnerability cards  
+- Detailed findings table  
+- Patch diff viewer (before/after)  
+- Export patched repo as ZIP  
+
+### **Security Timeline**
+- Chronological scan history  
+- Patch events  
+- Security posture trends  
+
+### **Agent Orchestration (MVP)**
+- Sequential flow (Architect → Builder → Critic → Sentinel)  
+- Agent execution logs  
+- Builder/Critic sample outputs  
+
+---
+
+## 📁 Project Structure
 
 ```
+
 app/
-├── layout.tsx                 # Root layout with sidebar and navbar
-├── page.tsx                   # Homepage
+├── layout.tsx
+├── page.tsx
 ├── upload/
-│   └── page.tsx              # Upload & scan page
 ├── scan-results/
-│   └── page.tsx              # Scan results dashboard
 ├── timeline/
-│   └── page.tsx              # Security timeline
 ├── patches/
-│   └── page.tsx              # Applied patches
 ├── settings/
-│   └── page.tsx              # Settings page
 └── test-components/
-    └── page.tsx              # Component testing page
 
 components/
-├── Sidebar.tsx               # Navigation sidebar
-├── Navbar.tsx                # Top navigation bar
-├── ScanContext.tsx           # Global state management
-├── VulnerabilityCard.tsx     # Summary cards
-├── VulnerabilityTable.tsx    # Vulnerability listing table
-├── Timeline.tsx              # Security timeline component
-├── PatchDiff.tsx             # Code diff viewer
-├── LoadingSkeletons.tsx      # Loading placeholders
-└── TestComponent.tsx         # Component testing
+├── Sidebar.tsx
+├── Navbar.tsx
+├── ScanContext.tsx
+├── VulnerabilityCard.tsx
+├── VulnerabilityTable.tsx
+├── Timeline.tsx
+├── PatchDiff.tsx
+└── LoadingSkeletons.tsx
 
 lib/
-├── sentinel.ts               # Security scanning engine
-├── orchestrator.ts          # Agent coordination
-├── extractZip.ts            # ZIP file extraction
-├── github.ts                # GitHub integration
-└── supabase.ts              # Database integration (stubs)
+├── sentinel.ts
+├── orchestrator.ts
+├── extractZip.ts
+├── github.ts
+└── supabase.ts
 
 app/api/
 ├── upload/
-│   └── route.ts             # File upload handler
 ├── scan/
-│   └── route.ts             # Security scanning
 ├── patch/
-│   └── route.ts             # Auto-patching
 └── commit/
-    └── route.ts             # GitHub commit
+
+````
+
+---
+
+## 🧪 Tech Stack
+
+- **Framework:** Next.js 14 (App Router)  
+- **Language:** TypeScript  
+- **UI:** Tailwind CSS, shadcn/ui, Lucide icons  
+- **State:** React Context API  
+- **Deployment:** Vercel  
+
+---
+
+## 🚀 Getting Started
+
+```bash
+npm install
+npm run dev
+````
+
+Visit: **[http://localhost:3000](http://localhost:3000)**
+
+### Production Build
+
+```bash
+npm run build
+npm start
 ```
 
-## Key Features
+---
 
-1. **Enterprise Dashboard Layout**
-   - Responsive sidebar navigation
-   - Dark mode support
-   - Professional UI components
+## 📌 Development Guidelines
 
-2. **Upload & Scan**
-   - Drag-and-drop ZIP file upload
-   - GitHub repository integration
-   - Real-time scanning progress
+* Dark mode support throughout
+* Mobile-first responsive design
+* Tailwind + shadcn for consistent UI
+* TypeScript everywhere for safety
+* Sentinel scanning logic in `/lib/sentinel.ts`
+* Do not commit `.env` files or secrets
 
-3. **Scan Results**
-   - Vulnerability summary cards
-   - Detailed findings table
-   - Severity filtering
-   - Patch status indicators
+---
 
-4. **Patch Management**
-   - Before/after code diff viewer
-   - Patch history tracking
-   - Export patched code
+## 👥 Team
 
-5. **Security Timeline**
-   - Visual scan history
-   - Event-based logging
-   - Trend analysis
+### **Naveen Patil — Lead Architect & Security Engineer**
 
-6. **Responsive Design**
-   - Mobile-friendly interface
-   - Tablet-optimized layouts
-   - Desktop-enhanced experiences
+[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20" /> LinkedIn](https://www.linkedin.com/in/naveen-patil-3618b221a)
 
-## Tech Stack
+### **Panav Payappagoudar — Full Stack Engineer (Builder & CI/CD Integration)**
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **State Management**: React Context API
-- **Deployment**: Vercel-compatible
+[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20" /> LinkedIn](https://www.linkedin.com/in/panav-payappagoudar)
 
-## Getting Started
+---
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+## 📄 License
 
-2. Run the development server:
-   ```bash
-   npm run dev
-   ```
+This project is created for Techfest IIT Bombay AutoDev Hackathon.
+All rights reserved — not open-source for production use.
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+---
 
-## Available Scripts
+## ⭐ Acknowledgements
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run linting
+* OWASP Top 10
+* Azure DevOps documentation
+* LangChain / AutoGen concepts
 
-## Development Guidelines
+```
 
-- All components use Tailwind CSS for styling
-- Dark mode support is implemented throughout
-- Responsive design follows mobile-first approach
-- TypeScript is used for type safety
-- Component composition follows atomic design principles
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a pull request
-
-## License
-
-This project is proprietary and confidential. All rights reserved.
-=======
-# DEVSENTINEL-AI
-DevSentinel AI is a secure-by-design autonomous development platform that transforms user stories and code repositories into secure, deployable applications using multi-agent LLMs. It scans, detects vulnerabilities, auto-patches code, and accelerates delivery with built-in security.
->>>>>>> 3a196081a463f1ddc6f9894a9772c3c165c1f3ef
