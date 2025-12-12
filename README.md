@@ -108,7 +108,7 @@ npm install
 npm run dev
 ````
 
-Visit: **[http://localhost:3000](http://localhost:3000)**
+Visit: It will be deployed at port 3000 and visit it locally
 
 ### Production Build
 
