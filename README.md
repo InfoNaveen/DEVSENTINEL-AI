@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DevSentinel AI - Enterprise Security Dashboard
 
 A premium, enterprise-grade security dashboard for automated vulnerability scanning and auto-patching.
@@ -132,3 +133,7 @@ app/api/
 ## License
 
 This project is proprietary and confidential. All rights reserved.
+=======
+# DEVSENTINEL-AI
+DevSentinel AI is a secure-by-design autonomous development platform that transforms user stories and code repositories into secure, deployable applications using multi-agent LLMs. It scans, detects vulnerabilities, auto-patches code, and accelerates delivery with built-in security.
+>>>>>>> 3a196081a463f1ddc6f9894a9772c3c165c1f3ef
