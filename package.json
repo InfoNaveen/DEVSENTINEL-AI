@@ -1,0 +1,42 @@
+{
+  "name": "devsentinel-ai",
+  "version": "1.0.0",
+  "description": "DevSentinel AI - Secure-by-design autonomous development platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "security",
+    "scanner",
+    "ai",
+    "devops",
+    "autonomous"
+  ],
+  "author": "DevSentinel AI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.10.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "adm-zip": "^0.5.16",
+    "glob": "^13.0.0",
+    "lucide-react": "^0.559.0",
+    "next": "^14.2.33",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "ts-node": "^10.9.2"
+  }
+}
