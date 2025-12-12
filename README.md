@@ -3,7 +3,26 @@
 
 DevSentinel AI is a next-generation autonomous development platform that transforms user stories and code repositories into secure, deployable applications using a collaborative multi-agent LLM workflow. It scans repositories, detects vulnerabilities, applies auto-patches, and provides an enterprise-grade dashboard for full security visibility.
 
-[![DevSentinel AI — Try Now](https://raw.githubusercontent.com/InfoNaveen/DEVSENTINEL-AI/main/assets/banner.png)](https://devsentinel-ai.vercel.app)
+<a href="https://devsentinel-ai.vercel.app" target="_blank">
+  <svg width="100%" height="150" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#0ea5a4"/>
+        <stop offset="1" stop-color="#7c3aed"/>
+      </linearGradient>
+    </defs>
+    <rect width="1200" height="300" rx="16" fill="url(#g)"/>
+    <text x="60" y="110" font-family="Segoe UI, Roboto, Arial" font-size="44" fill="#fff" font-weight="700">DevSentinel AI</text>
+    <text x="60" y="160" font-family="Segoe UI, Roboto, Arial" font-size="18" fill="#f0f9f9">Secure-by-design autonomous development — Try the live demo</text>
+    <rect x="60" y="185" rx="8" width="190" height="44" fill="#000" opacity="0.14"/>
+    <a href="https://devsentinel-ai.vercel.app"><text x="80" y="213" font-family="Segoe UI, Roboto, Arial" font-size="16" fill="#fff">▶ Try Live Demo</text></a>
+    <g transform="translate(1040,60)">
+      <!-- small vercel-like triangle -->
+      <polygon points="30,0 60,52 0,52" fill="#fff"/>
+    </g>
+  </svg>
+</a>
+
 
 ---
 
