@@ -3,6 +3,8 @@
 
 DevSentinel AI is a next-generation autonomous development platform that transforms user stories and code repositories into secure, deployable applications using a collaborative multi-agent LLM workflow. It scans repositories, detects vulnerabilities, applies auto-patches, and provides an enterprise-grade dashboard for full security visibility.
 
+[![DevSentinel AI — Try Now](https://raw.githubusercontent.com/InfoNaveen/DEVSENTINEL-AI/main/assets/banner.png)](https://devsentinel-ai.vercel.app)
+
 ---
 
 ## 🔥 Key Capabilities
