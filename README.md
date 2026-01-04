@@ -189,19 +189,7 @@ If Vercel fails to deploy, check:
 * Sentinel scanning logic located in `/lib/sentinel.ts`
 * DO NOT commit `.env` files or secrets
 
----
 
-## 👥 Team
-
-### **Naveen Patil — Lead Architect & Security Engineer**
-
-[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20" /> LinkedIn](https://www.linkedin.com/in/naveen-patil-3618b221a)
-
-### **Panav Payappagoudar — Full Stack Engineer (Builder & CI/CD Integration)**
-
-[<img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20" /> LinkedIn](https://www.linkedin.com/in/panav-payappagoudar)
-
----
 
 ## 📄 License
 
