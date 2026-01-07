@@ -6,18 +6,63 @@ import {
   Github,
   Bell,
   Palette,
-  Save
+  Save,
+  Zap
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const [githubToken, setGithubToken] = useState('');
+  const [azureOpenaiKey, setAzureOpenaiKey] = useState('');
+  const [azureOpenaiEndpoint, setAzureOpenaiEndpoint] = useState('');
+  const [azureOpenaiDeployment, setAzureOpenaiDeployment] = useState('');
+  const [azureContentSafetyKey, setAzureContentSafetyKey] = useState('');
+  const [azureContentSafetyEndpoint, setAzureContentSafetyEndpoint] = useState('');
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [llmTestStatus, setLlmTestStatus] = useState<{ status: 'idle' | 'testing' | 'success' | 'error'; message: string }>({ status: 'idle', message: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would save the settings
+    // In a real app, this would save the settings to a backend
+    const settings = {
+      githubToken,
+      azureOpenaiKey,
+      azureOpenaiEndpoint,
+      azureOpenaiDeployment,
+      azureContentSafetyKey,
+      azureContentSafetyEndpoint,
+      notifications,
+      darkMode
+    };
+    
+    console.log('Saving settings:', settings);
     alert('Settings saved successfully!');
+  };
+
+  const testLlmConnectivity = async () => {
+    setLlmTestStatus({ status: 'testing', message: 'Testing LLM connectivity...' });
+    
+    try {
+      const response = await fetch('/api/test-llm');
+      const data = await response.json();
+      
+      if (data.success) {
+        setLlmTestStatus({ 
+          status: 'success', 
+          message: 'All LLM providers are working correctly!' 
+        });
+      } else {
+        setLlmTestStatus({ 
+          status: 'error', 
+          message: `LLM test failed: ${data.error || 'Unknown error'}` 
+        });
+      }
+    } catch (error) {
+      setLlmTestStatus({ 
+        status: 'error', 
+        message: `LLM test failed: ${error instanceof Error ? error.message : 'Connection error'}` 
+      });
+    }
   };
 
   return (
@@ -27,6 +72,43 @@ export default function SettingsPage() {
         <p className="mt-2 text-gray-600 dark:text-gray-400">
           Configure your DevSentinel AI preferences
         </p>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
+        <div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">LLM Configuration</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Test and configure your LLM providers
+          </p>
+        </div>
+        <div className="px-4 py-5 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-white">Test LLM Connectivity</h4>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Verify that all LLM providers are properly configured
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <button
+                onClick={testLlmConnectivity}
+                disabled={llmTestStatus.status === 'testing'}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                {llmTestStatus.status === 'testing' ? 'Testing...' : 'Test LLM Connectivity'}
+              </button>
+            </div>
+          </div>
+          
+          {llmTestStatus.status !== 'idle' && (
+            <div className={`mt-4 p-4 rounded-md ${llmTestStatus.status === 'success' ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'}`}>
+              <p className={`text-sm font-medium ${llmTestStatus.status === 'success' ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                {llmTestStatus.message}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
@@ -41,7 +123,7 @@ export default function SettingsPage() {
             <div>
               <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Integrations</h4>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Github className="h-5 w-5 text-gray-400" />
@@ -59,9 +141,112 @@ export default function SettingsPage() {
                         id="github-token"
                         value={githubToken}
                         onChange={(e) => setGithubToken(e.target.value)}
+                        onBlur={(e) => setGithubToken(e.target.value)}
                         placeholder="ghp_************************************"
                         className="block w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <Key className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <label htmlFor="azure-openai-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Azure OpenAI API Key
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      API key for Azure OpenAI service.
+                    </p>
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="azure-openai-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          API Key
+                        </label>
+                        <input
+                          type="password"
+                          id="azure-openai-key"
+                          value={azureOpenaiKey}
+                          onChange={(e) => setAzureOpenaiKey(e.target.value)}
+                          onBlur={(e) => setAzureOpenaiKey(e.target.value)}
+                          placeholder="Azure OpenAI API key"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="azure-openai-endpoint" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Endpoint
+                        </label>
+                        <input
+                          type="text"
+                          id="azure-openai-endpoint"
+                          value={azureOpenaiEndpoint}
+                          onChange={(e) => setAzureOpenaiEndpoint(e.target.value)}
+                          onBlur={(e) => setAzureOpenaiEndpoint(e.target.value)}
+                          placeholder="https://your-resource.openai.azure.com"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <label htmlFor="azure-openai-deployment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Deployment Name
+                      </label>
+                      <input
+                        type="text"
+                        id="azure-openai-deployment"
+                        value={azureOpenaiDeployment}
+                        onChange={(e) => setAzureOpenaiDeployment(e.target.value)}
+                        onBlur={(e) => setAzureOpenaiDeployment(e.target.value)}
+                        placeholder="gpt-4"
+                        className="block w-full max-w-md px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <Key className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <label htmlFor="azure-content-safety-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Azure AI Content Safety Key
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      API key for Azure AI Content Safety service.
+                    </p>
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="azure-content-safety-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          API Key
+                        </label>
+                        <input
+                          type="password"
+                          id="azure-content-safety-key"
+                          value={azureContentSafetyKey}
+                          onChange={(e) => setAzureContentSafetyKey(e.target.value)}
+                          onBlur={(e) => setAzureContentSafetyKey(e.target.value)}
+                          placeholder="Azure Content Safety API key"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="azure-content-safety-endpoint" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Endpoint
+                        </label>
+                        <input
+                          type="text"
+                          id="azure-content-safety-endpoint"
+                          value={azureContentSafetyEndpoint}
+                          onChange={(e) => setAzureContentSafetyEndpoint(e.target.value)}
+                          onBlur={(e) => setAzureContentSafetyEndpoint(e.target.value)}
+                          placeholder="https://your-resource.cognitiveservices.azure.com"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

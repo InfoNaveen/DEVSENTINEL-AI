@@ -14,18 +14,39 @@ export interface GitHubCommitOptions {
 
 /**
  * Commit files to a GitHub repository
- * This is a stub implementation for the MVP
+ * This is a full implementation that creates blobs, trees, commits, and PRs
  */
 export async function commitToGitHub(options: GitHubCommitOptions): Promise<{ prUrl?: string }> {
   try {
+    // Validate inputs
+    if (!options.token || !options.owner || !options.repo || !options.branch || !options.message || !options.files) {
+      throw new Error('Missing required parameters for GitHub commit');
+    }
+
     const octokit = new Octokit({ auth: options.token });
 
     // Get the base branch SHA
-    const { data: baseRef } = await octokit.git.getRef({
-      owner: options.owner,
-      repo: options.repo,
-      ref: `heads/main`
-    });
+    let baseRef;
+    try {
+      const response = await octokit.git.getRef({
+        owner: options.owner,
+        repo: options.repo,
+        ref: `heads/main`
+      });
+      baseRef = response.data;
+    } catch (error) {
+      // Try master branch if main doesn't exist
+      try {
+        const response = await octokit.git.getRef({
+          owner: options.owner,
+          repo: options.repo,
+          ref: `heads/master`
+        });
+        baseRef = response.data;
+      } catch (masterError) {
+        throw new Error('Could not find main or master branch in repository');
+      }
+    }
 
     // Create a new branch
     try {
@@ -35,20 +56,89 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<{ pr
         ref: `refs/heads/${options.branch}`,
         sha: baseRef.object.sha
       });
-    } catch (branchError) {
-      console.warn('Branch may already exist:', branchError);
+    } catch (branchError: any) {
+      // Check if it's a branch already exists error
+      if (branchError.status === 422) {
+        console.warn('Branch may already exist, continuing...');
+      } else {
+        console.warn('Error creating branch:', branchError);
+      }
     }
 
-    // In a full implementation, you would:
-    // 1. Create blobs for each file
-    // 2. Create a tree with the blobs
-    // 3. Create a commit with the tree
-    // 4. Update the branch reference
-    // 5. Create a pull request
+    // Create blobs for each file
+    const blobs: Array<{
+      path: string;
+      sha: string;
+      mode: '100644';
+      type: 'blob';
+    }> = [];
+    
+    for (const file of options.files) {
+      // Skip empty files
+      if (!file.content) {
+        continue;
+      }
+      
+      try {
+        const { data: blob } = await octokit.git.createBlob({
+          owner: options.owner,
+          repo: options.repo,
+          content: file.content
+        });
+        blobs.push({
+          path: file.path,
+          sha: blob.sha,
+          mode: '100644', // file mode
+          type: 'blob'
+        });
+      } catch (blobError) {
+        console.error(`Error creating blob for ${file.path}:`, blobError);
+        // Continue with other files
+      }
+    }
 
-    // For MVP, we'll just return a mock PR URL
+    // If no blobs were created, return early
+    if (blobs.length === 0) {
+      throw new Error('No files were able to be committed');
+    }
+
+    // Create a tree with the blobs
+    const { data: tree } = await octokit.git.createTree({
+      owner: options.owner,
+      repo: options.repo,
+      base_tree: baseRef.object.sha,
+      tree: blobs
+    });
+
+    // Create a commit with the tree
+    const { data: commit } = await octokit.git.createCommit({
+      owner: options.owner,
+      repo: options.repo,
+      message: options.message,
+      tree: tree.sha,
+      parents: [baseRef.object.sha]
+    });
+
+    // Update the branch reference
+    await octokit.git.updateRef({
+      owner: options.owner,
+      repo: options.repo,
+      ref: `heads/${options.branch}`,
+      sha: commit.sha
+    });
+
+    // Create a pull request
+    const { data: pr } = await octokit.pulls.create({
+      owner: options.owner,
+      repo: options.repo,
+      title: options.message,
+      head: options.branch,
+      base: baseRef.ref.replace('refs/heads/', ''), // Use the same branch name as baseRef
+      body: 'Automated security fixes from DevSentinel AI'
+    });
+
     return {
-      prUrl: `https://github.com/${options.owner}/${options.repo}/compare/${options.branch}?expand=1`
+      prUrl: pr.html_url
     };
   } catch (error) {
     console.error('GitHub commit error:', error);
@@ -61,13 +151,22 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<{ pr
  */
 export function extractRepoInfo(repoUrl: string): { owner: string; repo: string } | null {
   try {
-    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/\.]+)/);
-    if (match && match[1] && match[2]) {
-      return {
-        owner: match[1],
-        repo: match[2]
-      };
+    // Handle different GitHub URL formats
+    const patterns = [
+      /github\.com\/([^\/]+)\/([^\/\.]+)/,  // Standard format
+      /github\.com\/([^\/]+)\/([^\/]+)\.git$/,  // Git format
+    ];
+    
+    for (const pattern of patterns) {
+      const match = repoUrl.match(pattern);
+      if (match && match[1] && match[2]) {
+        return {
+          owner: match[1],
+          repo: match[2]
+        };
+      }
     }
+    
     return null;
   } catch (error) {
     console.error('Error extracting repo info:', error);

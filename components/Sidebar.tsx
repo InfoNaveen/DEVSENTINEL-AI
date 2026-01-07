@@ -54,7 +54,7 @@ export function Sidebar({
       <motion.aside
         variants={sidebarVariants}
         animate={sidebarOpen ? 'open' : 'closed'}
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-[#0f172a]/95 backdrop-blur-xl border-r border-cyan-500/20 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col mica-strong border-r border-gray-600/30 md:static md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
         style={{ width: sidebarOpen ? '280px' : '80px' }}
@@ -124,8 +124,8 @@ export function Sidebar({
                     href={item.href}
                     className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-lg shadow-cyan-500/10'
-                        : 'text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent'
+                        ? 'bg-microsoft-blue text-white border border-transparent shadow-lg'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-700/50 border border-transparent'
                     }`}
                   >
                     {isActive && (
@@ -176,7 +176,7 @@ export function Sidebar({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="flex items-center space-x-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20"
+                  className="flex items-center space-x-3 p-3 rounded-lg bg-gray-700/50 border border-gray-600/30"
                 >
                   <div className="relative">
                     <Activity className="h-4 w-4 text-green-400" />

@@ -1,56 +1,92 @@
-// Supabase integration stubs for DevSentinel AI
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Stub function for Supabase authentication
- */
-export async function authenticateUser(email: string, password: string): Promise<boolean> {
-  // In a real implementation, this would connect to Supabase Auth
-  console.log(`Authenticating user: ${email}`);
-  // Mock successful authentication
-  return true;
+// Define types for our Supabase tables
+export interface User {
+  id: string;
+  email: string;
+  created_at: string;
 }
 
-/**
- * Stub function for storing scan results in Supabase
- */
-export async function storeScanResults(userId: string, projectId: string, results: any): Promise<boolean> {
-  // In a real implementation, this would store results in Supabase database
-  console.log(`Storing scan results for user ${userId}, project ${projectId}`);
-  // Mock successful storage
-  return true;
+export interface Project {
+  id: string;
+  user_id: string;
+  name: string;
+  repo_url: string | null;
+  created_at: string;
 }
 
-/**
- * Stub function for retrieving historical scan data
- */
-export async function getHistoricalScans(userId: string): Promise<any[]> {
-  // In a real implementation, this would retrieve data from Supabase
-  console.log(`Retrieving historical scans for user ${userId}`);
-  // Mock empty results
-  return [];
+export interface Scan {
+  id: string;
+  project_id: string;
+  severity_counts: Record<string, number> | null;
+  created_at: string;
 }
 
-/**
- * Stub function for project management
- */
-export async function createProject(userId: string, projectName: string): Promise<string> {
-  // In a real implementation, this would create a project record in Supabase
-  console.log(`Creating project ${projectName} for user ${userId}`);
-  // Mock project ID generation
-  return `proj_${Date.now()}`;
+export interface Vulnerability {
+  id: string;
+  scan_id: string;
+  severity: 'low' | 'medium' | 'high';
+  file_path: string;
+  line_number: number;
+  description: string;
+  code_snippet: string;
+  created_at: string;
 }
 
-/**
- * Stub function for retrieving project details
- */
-export async function getProjectDetails(projectId: string): Promise<any | null> {
-  // In a real implementation, this would retrieve project data from Supabase
-  console.log(`Retrieving details for project ${projectId}`);
-  // Mock project data
-  return {
-    id: projectId,
-    name: 'Sample Project',
-    createdAt: new Date().toISOString(),
-    lastScan: null
-  };
+export interface Patch {
+  id: string;
+  scan_id: string;
+  vulnerability_id: string;
+  before_code: string | null;
+  after_code: string | null;
+  created_at: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  project_id: string;
+  event_type: string;
+  event_message: string;
+  created_at: string;
+}
+
+// Validate environment variables
+function validateEnvVars() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+  }
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
+  }
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable');
+  }
+}
+
+// Browser-side Supabase client
+export function supabaseBrowser() {
+  validateEnvVars();
+  
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  
+  return supabase;
+}
+
+// Service role client for admin operations (bypasses RLS)
+export function supabaseServiceRole() {
+  validateEnvVars();
+  
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
 }

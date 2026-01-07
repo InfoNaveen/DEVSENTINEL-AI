@@ -33,7 +33,9 @@ export default function UploadPage() {
   
   const [file, setFile] = useState<File | null>(null);
   const [repoUrl, setRepoUrl] = useState('');
-  const [uploadMethod, setUploadMethod] = useState<'zip' | 'github'>('zip');
+  const [userStory, setUserStory] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [uploadMethod, setUploadMethod] = useState<'zip' | 'github' | 'user_story'>('zip');
   const [isDragging, setIsDragging] = useState(false);
   const [scanPhase, setScanPhase] = useState<ScanPhase>('idle');
   const [progress, setProgress] = useState(0);
@@ -162,6 +164,46 @@ export default function UploadPage() {
         setScanResults(scanData.findings);
         setPatches(scanData.patches);
         setAppState('showing-results');
+      } else if (uploadMethod === 'user_story' && userStory && projectName) {
+        const formData = new FormData();
+        formData.append('userStory', userStory);
+        formData.append('projectName', projectName);
+
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const uploadData = await uploadResponse.json();
+        if (!uploadResponse.ok || !uploadData.success) {
+          throw new Error(uploadData.error || 'User story upload failed');
+        }
+
+        setProjectId(uploadData.projectId);
+        setAppState('scanning');
+        setScanPhase('fetching');
+        simulateProgress();
+
+        // Trigger orchestration (generates code and scans it)
+        const orchestrateResponse = await fetch('/api/orchestrate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            projectId: uploadData.projectId,
+            userStory: userStory
+          }),
+        });
+
+        const orchestrateData = await orchestrateResponse.json();
+        if (!orchestrateResponse.ok || !orchestrateData.success) {
+          throw new Error(orchestrateData.error || 'Code generation and scan failed');
+        }
+
+        setScanResults(orchestrateData.findings);
+        setPatches(orchestrateData.patches);
+        setAppState('showing-results');
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -224,6 +266,18 @@ export default function UploadPage() {
             <Github className="inline-block mr-2 h-4 w-4" />
             GitHub Repo
           </button>
+          <button
+            type="button"
+            onClick={() => setUploadMethod('user_story')}
+            className={`flex-1 px-6 py-3 rounded-lg text-sm font-medium transition-all ${
+              uploadMethod === 'user_story' 
+                ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30 shadow-lg shadow-cyan-500/10' 
+                : 'text-gray-400 hover:text-cyan-400'
+            }`}
+          >
+            <FileText className="inline-block mr-2 h-4 w-4" />
+            User Story
+          </button>
         </div>
 
         {/* Progress Indicator */}
@@ -283,7 +337,41 @@ export default function UploadPage() {
         </AnimatePresence>
 
         <form onSubmit={handleSubmit}>
-          {uploadMethod === 'zip' ? (
+          {uploadMethod === 'user_story' ? (
+            <motion.div variants={fadeIn} className="space-y-6">
+              <div>
+                <label htmlFor="project-name" className="block text-sm font-medium text-gray-300 mb-2">
+                  Project Name
+                </label>
+                <input
+                  type="text"
+                  id="project-name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="My Secure App"
+                  className="block w-full px-4 py-3 bg-gray-900/50 border border-cyan-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-gray-200 placeholder-gray-500 transition-all"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="user-story" className="block text-sm font-medium text-gray-300 mb-2">
+                  User Story
+                </label>
+                <textarea
+                  id="user-story"
+                  value={userStory}
+                  onChange={(e) => setUserStory(e.target.value)}
+                  placeholder="As a user, I want to securely log in so that I can access my dashboard."
+                  rows={8}
+                  className="block w-full px-4 py-3 bg-gray-900/50 border border-cyan-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-gray-200 placeholder-gray-500 transition-all resize-none"
+                  required
+                />
+                <p className="mt-2 text-xs text-gray-400">
+                  Describe what you want to build. DevSentinel AI will generate secure code from your story.
+                </p>
+              </div>
+            </motion.div>
+          ) : uploadMethod === 'zip' ? (
             <motion.div
               variants={fadeIn}
               className={`relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 ${

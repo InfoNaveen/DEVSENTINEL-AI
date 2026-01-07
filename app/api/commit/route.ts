@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Octokit } from '@octokit/rest';
+import { promises as fs } from 'fs';
+import { commitToGitHub, extractRepoInfo } from '@/lib/github';
 
 const execPromise = promisify(exec);
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { projectId, githubToken, branchName = 'devsentinel-fixes', commitMessage = 'Apply security fixes from DevSentinel AI' } = body;
+    const { projectId, githubToken, branchName = 'devsentinel-fixes', commitMessage = 'Apply security fixes from DevSentinel AI', repoUrl } = body;
 
     if (!projectId) {
       return NextResponse.json({ success: false, error: 'Project ID is required' }, { status: 400 });
@@ -19,56 +20,76 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'GitHub token is required' }, { status: 400 });
     }
 
+    if (!repoUrl) {
+      return NextResponse.json({ success: false, error: 'Repository URL is required' }, { status: 400 });
+    }
+
     const projectPath = path.join(process.cwd(), 'tmp', 'devsentinel', projectId);
 
-    // Initialize git repo if not already initialized
-    try {
-      await execPromise('git init', { cwd: projectPath });
-      await execPromise('git add .', { cwd: projectPath });
-      await execPromise(`git commit -m "${commitMessage}"`, { cwd: projectPath });
-    } catch (initError) {
-      console.error('Git initialization error:', initError);
-      // Continue anyway as the repo might already be initialized
+    // Extract repository info from URL
+    const repoInfo = extractRepoInfo(repoUrl);
+    if (!repoInfo) {
+      return NextResponse.json({ success: false, error: 'Invalid repository URL' }, { status: 400 });
     }
 
-    // Get repository info (this is a simplified approach)
-    // In a real implementation, you would extract this from the original repo
-    const repoInfo = {
-      owner: 'example',
-      repo: 'example-repo'
-    };
-
-    const octokit = new Octokit({ auth: githubToken });
-
-    // Create a new branch
-    try {
-      const { data: mainRef } = await octokit.git.getRef({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        ref: 'heads/main'
-      });
-
-      await octokit.git.createRef({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        ref: `refs/heads/${branchName}`,
-        sha: mainRef.object.sha
-      });
-    } catch (branchError) {
-      console.error('Branch creation error:', branchError);
-      // Branch might already exist
-    }
-
-    // In a real implementation, you would:
-    // 1. Push the changes to the new branch
-    // 2. Create a pull request
+    // Read all files in the project directory to commit
+    const filesToCommit: Array<{ path: string; content: string }> = [];
     
-    // For this MVP, we'll just return a success message
-    return NextResponse.json({ 
-      success: true,
-      message: 'Changes committed successfully', 
-      prUrl: `https://github.com/${repoInfo.owner}/${repoInfo.repo}/compare/${branchName}?expand=1` 
-    });
+    try {
+      const getAllFiles = async (dir: string, basePath: string = '') => {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          const relativePath = path.join(basePath, entry.name);
+          
+          if (entry.isDirectory()) {
+            // Skip node_modules and other common directories
+            if (!['node_modules', '.git', 'dist', 'build', '.next'].includes(entry.name)) {
+              await getAllFiles(fullPath, relativePath);
+            }
+          } else {
+            // Read file content
+            try {
+              const content = await fs.readFile(fullPath, 'utf8');
+              filesToCommit.push({
+                path: relativePath.replace(/\\/g, '/'), // Normalize path separators
+                content
+              });
+            } catch (readError) {
+              // Skip binary files or files that can't be read
+              console.warn(`Could not read file ${fullPath}:`, readError);
+            }
+          }
+        }
+      };
+      
+      await getAllFiles(projectPath);
+    } catch (readError) {
+      console.error('Error reading project files:', readError);
+      return NextResponse.json({ success: false, error: 'Failed to read project files' }, { status: 500 });
+    }
+
+    // Commit files to GitHub
+    try {
+      const result = await commitToGitHub({
+        token: githubToken,
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        branch: branchName,
+        message: commitMessage,
+        files: filesToCommit
+      });
+      
+      return NextResponse.json({ 
+        success: true,
+        message: 'Changes committed successfully', 
+        prUrl: result.prUrl
+      });
+    } catch (commitError) {
+      console.error('Commit error:', commitError);
+      return NextResponse.json({ success: false, error: `Failed to commit to GitHub: ${commitError instanceof Error ? commitError.message : 'Unknown error'}` }, { status: 500 });
+    }
   } catch (error) {
     console.error('Commit error:', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });

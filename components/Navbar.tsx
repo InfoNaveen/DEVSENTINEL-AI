@@ -11,10 +11,13 @@ import {
   Activity,
   AlertCircle,
   CheckCircle2,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { useScan } from '@/components/ScanContext';
 import { slideInRight, fadeIn } from '@/lib/motion';
+import { supabaseBrowser } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export function Navbar({ 
   sidebarOpen, 
@@ -27,6 +30,7 @@ export function Navbar({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { appState } = useScan();
   const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'complete'>('idle');
+  const router = useRouter();
 
   useEffect(() => {
     if (appState === 'scanning') {
@@ -37,6 +41,16 @@ export function Navbar({
       setScanStatus('idle');
     }
   }, [appState]);
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabaseBrowser().auth.signOut();
+      if (error) throw error;
+      router.push('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   const notifications = [
     { id: 1, type: 'threat', message: '3 critical vulnerabilities detected', time: '2m ago' },
@@ -49,7 +63,7 @@ export function Navbar({
       initial="hidden"
       animate="visible"
       variants={slideInRight}
-      className="sticky top-0 z-30 flex h-16 flex-shrink-0 glass-strong border-b border-cyan-500/20"
+      className="sticky top-0 z-30 flex h-16 flex-shrink-0 mica-strong border-b border-gray-600/30"
     >
       <div className="flex flex-1 items-center justify-between px-4 md:px-6">
         {/* Left Section */}
@@ -228,13 +242,16 @@ export function Navbar({
                       >
                         Settings
                       </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setUserMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center"
                       >
+                        <LogOut className="mr-2 h-4 w-4" />
                         Sign out
-                      </a>
+                      </button>
                     </div>
                   </motion.div>
                 </>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useScan } from '@/components/ScanContext';
 import { VulnerabilityCard } from '@/components/VulnerabilityCard';
 import { VulnerabilityTable } from '@/components/VulnerabilityTable';
+import RedTeamTerminal from '@/components/RedTeamTerminal';
 import { 
   Download,
   Wrench,
@@ -119,7 +120,7 @@ export default function ScanResultsPage() {
               whileTap={{ scale: 0.95 }}
               onClick={handleExport}
               disabled={!projectId}
-              className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="inline-flex items-center px-5 py-2.5 bg-microsoft-blue text-white font-medium rounded-lg shadow-lg shadow-microsoft-blue/30 hover:bg-[#106ebe] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Download className="mr-2 h-4 w-4" />
               Export ZIP
@@ -128,7 +129,7 @@ export default function ScanResultsPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center px-5 py-2.5 glass-strong border border-cyan-500/30 text-cyan-400 font-medium rounded-lg hover:bg-cyan-500/10 transition-all"
+                className="inline-flex items-center px-5 py-2.5 mica-strong border border-gray-600/30 text-white font-medium rounded-lg hover:bg-gray-700/50 transition-all"
               >
                 <Wrench className="mr-2 h-4 w-4" />
                 View Patches
@@ -175,9 +176,9 @@ export default function ScanResultsPage() {
           {/* Severity Heatmap & Distribution */}
           <motion.div variants={staggerItem} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Severity Heatmap */}
-            <div className="lg:col-span-2 glass-strong rounded-xl border border-cyan-500/20 p-6">
-              <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center">
-                <TrendingUp className="mr-2 h-5 w-5 text-cyan-400" />
+            <div className="lg:col-span-2 mica-strong rounded-xl border border-gray-600/30 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <TrendingUp className="mr-2 h-5 w-5 text-microsoft-blue" />
                 Severity Distribution
               </h3>
               <div className="space-y-3">
@@ -227,9 +228,9 @@ export default function ScanResultsPage() {
             </div>
 
             {/* Donut Chart */}
-            <div className="glass-strong rounded-xl border border-cyan-500/20 p-6">
-              <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center">
-                <Shield className="mr-2 h-5 w-5 text-cyan-400" />
+            <div className="mica-strong rounded-xl border border-gray-600/30 p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-microsoft-blue" />
                 Threat Distribution
               </h3>
               <div className="relative w-full aspect-square flex items-center justify-center">
@@ -321,12 +322,12 @@ export default function ScanResultsPage() {
           </motion.div>
 
           {/* Vulnerability Table */}
-          <motion.div variants={staggerItem} className="glass-strong rounded-xl border border-cyan-500/20 overflow-hidden">
-            <div className="px-6 py-4 border-b border-cyan-500/20 bg-gray-800/50">
+          <motion.div variants={staggerItem} className="mica-strong rounded-xl border border-gray-600/30 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-600/30 bg-gray-800/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-200 flex items-center">
-                    <FileCode className="mr-2 h-5 w-5 text-cyan-400" />
+                  <h3 className="text-lg font-semibold text-white flex items-center">
+                    <FileCode className="mr-2 h-5 w-5 text-microsoft-blue" />
                     Detected Vulnerabilities
                   </h3>
                   <p className="mt-1 text-sm text-gray-400">
@@ -339,11 +340,16 @@ export default function ScanResultsPage() {
               <VulnerabilityTable findings={scanResults} patches={patches} />
             </div>
           </motion.div>
+
+          {/* Red Team Terminal */}
+          <motion.div variants={staggerItem} className="mt-8">
+            <RedTeamTerminal />
+          </motion.div>
         </>
       ) : (
         <motion.div
           variants={fadeIn}
-          className="glass-strong rounded-xl border border-green-500/20 overflow-hidden text-center py-16"
+          className="mica-strong rounded-xl border border-gray-600/30 overflow-hidden text-center py-16"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -361,7 +367,7 @@ export default function ScanResultsPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 transition-all"
+              className="inline-flex items-center px-6 py-3 bg-microsoft-blue text-white font-medium rounded-lg shadow-lg shadow-microsoft-blue/30 hover:bg-[#106ebe] transition-all"
             >
               Scan Another Repository
             </motion.button>
