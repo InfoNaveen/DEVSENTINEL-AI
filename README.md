@@ -658,7 +658,7 @@ If Vercel fails to deploy, check:
 
 ## 📄 License
 
-This project was created as part of **DevHack 7.0 (PARSEC 6.0), IIT Dharwad**.
+This project was created as an independent research and prototype initiative.
 
 The code is intended **for evaluation, demonstration, and educational purposes only**.  
 All rights are reserved by the authors. Commercial or production use requires explicit permission.
@@ -670,5 +670,10 @@ All rights are reserved by the authors. Commercial or production use requires ex
 * Azure DevOps documentation
 * LangChain / AutoGen concepts
 
-```
+---
+
+### 👤 Project Builder  
+**Naveen Patil**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/naveen-patil-3618b221a)
+
 
