@@ -656,13 +656,13 @@ If Vercel fails to deploy, check:
 * DO NOT commit `.env` files or secrets
 
 
-
 ## 📄 License
 
-This project is created for Techfest IIT Bombay AutoDev Hackathon.
-All rights reserved — not open-source for production use.
+This project was created as part of **DevHack 7.0 (PARSEC 6.0), IIT Dharwad**.
 
----
+The code is intended **for evaluation, demonstration, and educational purposes only**.  
+All rights are reserved by the authors. Commercial or production use requires explicit permission.
+
 
 ## ⭐ Acknowledgements
 
@@ -671,4 +671,4 @@ All rights reserved — not open-source for production use.
 * LangChain / AutoGen concepts
 
 ```
->>>>>>> e0b153e50be9ca02592341547d56667980482bfa
+
