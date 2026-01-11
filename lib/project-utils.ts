@@ -10,8 +10,8 @@ export async function prepareProjectFromStorage(
   projectId: string,
   storagePath: string
 ): Promise<string> {
-  // Use /tmp for Vercel compatibility
-  const tmpDir = '/tmp';
+  // Use os.tmpdir() for cross-platform compatibility
+  const tmpDir = require('os').tmpdir();
   const projectDir = path.join(tmpDir, `devsentinel-${projectId}-${Date.now()}`);
 
   try {
@@ -36,7 +36,7 @@ export async function prepareProjectFromStorage(
     // Clean up on error
     try {
       await fs.rm(projectDir, { recursive: true, force: true });
-    } catch {}
+    } catch { }
     throw error;
   }
 }

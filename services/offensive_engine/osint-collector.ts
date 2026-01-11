@@ -146,11 +146,19 @@ export class OSINTCollector {
       // Check if nmap is installed
       await execPromise('nmap --version', { timeout: 5000 });
 
-      const nmapScripts = this.config.nmapScripts || [];
       // Prepare nmap command with common scripts
-      let command = `nmap -sV --script ${nmapScripts.length > 0
-        ? nmapScripts.join(',')
-        : 'vuln,http-enum,http-headers,http-title,http-trace,nmap-vulns,cve'} ${target}`;
+      // Security: Validate scripts are alphanumeric/basic dashes only to prevent injection
+      const safeScripts = (this.config.nmapScripts || [])
+        .filter(s => /^[a-zA-Z0-9\-_,]+$/.test(s));
+
+      let command = `nmap -sV`;
+      if (safeScripts.length > 0) {
+        command += ` --script ${safeScripts.join(',')}`;
+      } else {
+        // Default scripts if none provided or all were invalid
+        command += ` --script vuln,http-enum,http-headers,http-title,http-trace,nmap-vulns,cve`;
+      }
+      command += ` -p- "${target}"`;
 
       const { stdout, stderr } = await execPromise(command, {
         timeout: this.config.timeout,

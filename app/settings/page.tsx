@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   Key,
   Github,
   Bell,
@@ -34,33 +34,33 @@ export default function SettingsPage() {
       notifications,
       darkMode
     };
-    
-    console.log('Saving settings:', settings);
+
+    // console.log('Saving settings:', settings);
     alert('Settings saved successfully!');
   };
 
   const testLlmConnectivity = async () => {
     setLlmTestStatus({ status: 'testing', message: 'Testing LLM connectivity...' });
-    
+
     try {
       const response = await fetch('/api/test-llm');
       const data = await response.json();
-      
+
       if (data.success) {
-        setLlmTestStatus({ 
-          status: 'success', 
-          message: 'All LLM providers are working correctly!' 
+        setLlmTestStatus({
+          status: 'success',
+          message: 'All LLM providers are working correctly!'
         });
       } else {
-        setLlmTestStatus({ 
-          status: 'error', 
-          message: `LLM test failed: ${data.error || 'Unknown error'}` 
+        setLlmTestStatus({
+          status: 'error',
+          message: `LLM test failed: ${data.error || 'Unknown error'}`
         });
       }
     } catch (error) {
-      setLlmTestStatus({ 
-        status: 'error', 
-        message: `LLM test failed: ${error instanceof Error ? error.message : 'Connection error'}` 
+      setLlmTestStatus({
+        status: 'error',
+        message: `LLM test failed: ${error instanceof Error ? error.message : 'Connection error'}`
       });
     }
   };
@@ -100,7 +100,7 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
-          
+
           {llmTestStatus.status !== 'idle' && (
             <div className={`mt-4 p-4 rounded-md ${llmTestStatus.status === 'success' ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'}`}>
               <p className={`text-sm font-medium ${llmTestStatus.status === 'success' ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
@@ -122,7 +122,7 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Integrations</h4>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -148,7 +148,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Key className="h-5 w-5 text-gray-400" />
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <Key className="h-5 w-5 text-gray-400" />
@@ -255,7 +255,7 @@ export default function SettingsPage() {
 
             <div>
               <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Preferences</h4>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
@@ -275,19 +275,16 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setNotifications(!notifications)}
-                      className={`${
-                        notifications ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-600'
-                      } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                      className={`${notifications ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-600'
+                        } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                     >
                       <span
-                        className={`${
-                          notifications ? 'translate-x-5' : 'translate-x-0'
-                        } pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200`}
+                        className={`${notifications ? 'translate-x-5' : 'translate-x-0'
+                          } pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200`}
                       >
                         <span
-                          className={`${
-                            notifications ? 'opacity-0 ease-out duration-100' : 'opacity-100 ease-in duration-200'
-                          } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
+                          className={`${notifications ? 'opacity-0 ease-out duration-100' : 'opacity-100 ease-in duration-200'
+                            } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
                           aria-hidden="true"
                         >
                           <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
@@ -301,9 +298,8 @@ export default function SettingsPage() {
                           </svg>
                         </span>
                         <span
-                          className={`${
-                            notifications ? 'opacity-100 ease-in duration-200' : 'opacity-0 ease-out duration-100'
-                          } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
+                          className={`${notifications ? 'opacity-100 ease-in duration-200' : 'opacity-0 ease-out duration-100'
+                            } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
                           aria-hidden="true"
                         >
                           <svg className="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
@@ -333,19 +329,16 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setDarkMode(!darkMode)}
-                      className={`${
-                        darkMode ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-600'
-                      } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                      className={`${darkMode ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-600'
+                        } relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                     >
                       <span
-                        className={`${
-                          darkMode ? 'translate-x-5' : 'translate-x-0'
-                        } pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200`}
+                        className={`${darkMode ? 'translate-x-5' : 'translate-x-0'
+                          } pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200`}
                       >
                         <span
-                          className={`${
-                            darkMode ? 'opacity-0 ease-out duration-100' : 'opacity-100 ease-in duration-200'
-                          } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
+                          className={`${darkMode ? 'opacity-0 ease-out duration-100' : 'opacity-100 ease-in duration-200'
+                            } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
                           aria-hidden="true"
                         >
                           <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
@@ -359,9 +352,8 @@ export default function SettingsPage() {
                           </svg>
                         </span>
                         <span
-                          className={`${
-                            darkMode ? 'opacity-100 ease-in duration-200' : 'opacity-0 ease-out duration-100'
-                          } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
+                          className={`${darkMode ? 'opacity-100 ease-in duration-200' : 'opacity-0 ease-out duration-100'
+                            } absolute inset-0 h-full w-full flex items-center justify-center transition-opacity`}
                           aria-hidden="true"
                         >
                           <svg className="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">

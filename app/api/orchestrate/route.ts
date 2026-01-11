@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       ]);
 
     // Prepare project directory
-    const tmpDir = '/tmp';
+    const tmpDir = require('os').tmpdir();
     projectDir = path.join(tmpDir, `devsentinel-${projectId}-${Date.now()}`);
     await fs.mkdir(projectDir, { recursive: true });
 
@@ -120,9 +120,9 @@ export async function POST(request: NextRequest) {
         await fs.rm(extractedDir, { recursive: true, force: true });
       } catch (error: any) {
         console.error('Failed to load project from storage:', error);
-        return NextResponse.json({ 
-          success: false, 
-          error: `Failed to load project: ${error.message}` 
+        return NextResponse.json({
+          success: false,
+          error: `Failed to load project: ${error.message}`
         }, { status: 500 });
       }
     }
@@ -194,10 +194,10 @@ export async function POST(request: NextRequest) {
     if (scan && result.patches.length > 0) {
       const patches = result.patches.map(patch => {
         // Try to find matching vulnerability by file and approximate line
-        const matchingKey = Object.keys(vulnerabilityIds).find(key => 
+        const matchingKey = Object.keys(vulnerabilityIds).find(key =>
           key.startsWith(patch.file + ':')
         );
-        
+
         return {
           scan_id: scan.id,
           vulnerability_id: matchingKey ? vulnerabilityIds[matchingKey] : null,
@@ -238,9 +238,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Orchestration error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message || 'Internal server error' 
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Internal server error'
     }, { status: 500 });
   } finally {
     // Clean up project directory

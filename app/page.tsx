@@ -27,13 +27,15 @@ export default function HomePage() {
           DEVSENTINEL
         </div>
         <div className="hidden md:flex space-x-8 text-sm font-medium text-gray-300">
-          <a href="#" className="hover:text-brand-secondary transition-colors">SOLUTIONS</a>
-          <a href="#" className="hover:text-brand-secondary transition-colors">COMPLIANCE</a>
-          <a href="#" className="hover:text-brand-secondary transition-colors">FINANCIAL API</a>
-          <a href="#" className="hover:text-brand-secondary transition-colors">ENTERPRISE</a>
+          <a href="#solutions" className="hover:text-brand-secondary transition-colors">SOLUTIONS</a>
+          <a href="#compliance" className="hover:text-brand-secondary transition-colors">COMPLIANCE</a>
+          <a href="#financial-api" className="hover:text-brand-secondary transition-colors">FINANCIAL API</a>
+          <a href="#enterprise" className="hover:text-brand-secondary transition-colors">ENTERPRISE</a>
         </div>
         <div className="flex items-center space-x-4">
-          <button className="text-sm font-medium text-white hover:text-brand-secondary">INSTITUTIONAL LOGIN</button>
+          <Link href="/login">
+            <button className="text-sm font-medium text-white hover:text-brand-secondary">INSTITUTIONAL LOGIN</button>
+          </Link>
           <Link href="/upload">
             <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition-colors">
               REQUEST AUDIT

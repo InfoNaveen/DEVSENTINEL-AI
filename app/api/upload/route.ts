@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import extractZip from '@/lib/extractZip';
+import os from 'os';
 import { supabaseServiceRole } from '@/lib/supabase';
 import { getAuthenticatedUser } from '@/lib/auth-utils';
 import { uploadToStorage } from '@/lib/storage-utils';
@@ -33,13 +33,16 @@ export async function POST(request: NextRequest) {
 
     // Check if it's a file upload, GitHub URL, or user story
     const contentType = request.headers.get('content-type') || '';
-    
+
     if (contentType.includes('multipart/form-data')) {
       // Handle ZIP file upload or user story
       const formData = await request.formData();
       const file = formData.get('file') as File | null;
       const userStory = formData.get('userStory') as string | null;
-      const projectName = (formData.get('projectName') as string) || `Project ${new Date().toISOString()}`;
+      let projectName = (formData.get('projectName') as string) || `Project ${new Date().toISOString()}`;
+
+      // Sanitize project name
+      projectName = projectName.substring(0, 100).replace(/[<>:"/\\|?*]/g, '');
 
       // Create project in Supabase first to get UUID
       const { data: project, error: projectError } = await supabase
@@ -113,10 +116,21 @@ export async function POST(request: NextRequest) {
     } else {
       // Handle GitHub repository URL
       const body = await request.json();
-      const { repoUrl, githubToken, projectName } = body;
+      const { repoUrl, githubToken } = body;
+      let { projectName } = body;
 
       if (!repoUrl) {
         return NextResponse.json({ success: false, error: 'No repository URL provided' }, { status: 400 });
+      }
+
+      // Sanitize project name
+      projectName = (projectName || `GitHub Project ${new Date().toISOString()}`).substring(0, 100).replace(/[<>:"/\\|?*]/g, '');
+
+      // Security: Strictly validate URL to prevent command injection
+      // Must be a valid http/https URL and end with .git optional, no spaces or shell characters
+      const urlPattern = /^https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9._-]+)+\/?(\.git)?$/;
+      if (!urlPattern.test(repoUrl)) {
+        return NextResponse.json({ success: false, error: 'Invalid repository URL format' }, { status: 400 });
       }
 
       // Create project in Supabase first
@@ -124,7 +138,7 @@ export async function POST(request: NextRequest) {
         .from('projects')
         .insert([
           {
-            name: projectName || `GitHub Project ${new Date().toISOString()}`,
+            name: projectName,
             user_id: userId,
             repo_url: repoUrl,
           }
@@ -139,13 +153,13 @@ export async function POST(request: NextRequest) {
 
       const projectId = project.id;
 
-      // Clone repository to temporary location (using /tmp which works on Vercel)
-      const tmpDir = '/tmp';
+      // Clone repository to temporary location (cross-platform compatible)
+      const tmpDir = os.tmpdir();
       const cloneDir = path.join(tmpDir, `devsentinel-${projectId}-${Date.now()}`);
-      
+
       try {
         let cloneCmd = `git clone --depth 1 "${repoUrl}" "${cloneDir}"`;
-        
+
         if (githubToken) {
           // Add token to URL for private repositories
           const urlObj = new URL(repoUrl);
@@ -188,24 +202,26 @@ export async function POST(request: NextRequest) {
           type: 'github_repo'
         });
       } catch (cloneError: any) {
-        console.error('Git clone error:', cloneError);
-        
+        // Redact token from error message if present
+        const errorMessage = cloneError.message.replace(githubToken || 'HIDDEN_TOKEN', '*****');
+        console.error('Git clone error:', errorMessage);
+
         // Clean up on error
         try {
           await fs.rm(cloneDir, { recursive: true, force: true });
-        } catch {}
+        } catch { }
 
-        return NextResponse.json({ 
-          success: false, 
-          error: `Failed to clone repository: ${cloneError.message}` 
+        return NextResponse.json({
+          success: false,
+          error: `Failed to clone repository: ${errorMessage}`
         }, { status: 500 });
       }
     }
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message || 'Internal server error' 
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Internal server error'
     }, { status: 500 });
   }
 }

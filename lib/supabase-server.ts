@@ -11,17 +11,15 @@ function validateEnvVars() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
   }
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable');
-  }
+  // Service role key is not needed for client-side/cookie auth, only for admin tasks
 }
 
 // Server-side Supabase client with cookie-based auth (for user sessions)
 export async function createSupabaseServerClient() {
   validateEnvVars();
-  
+
   const cookieStore = await cookies();
-  
+
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -58,11 +56,11 @@ export async function getCurrentUserServer() {
   try {
     const supabase = await createSupabaseServerClient();
     const { data: { user }, error } = await supabase.auth.getUser();
-    
+
     if (error || !user) {
       return null;
     }
-    
+
     return user;
   } catch (error) {
     console.error('Error getting current user:', error);

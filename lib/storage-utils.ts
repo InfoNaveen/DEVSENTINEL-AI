@@ -8,28 +8,28 @@ const STORAGE_BUCKET = 'projects';
  */
 export async function ensureStorageBucket() {
   const supabase = supabaseServiceRole();
-  
+
   // Check if bucket exists
   const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-  
+
   if (listError) {
     console.error('Error listing buckets:', listError);
     return;
   }
-  
+
   const bucketExists = buckets?.some(b => b.name === STORAGE_BUCKET);
-  
+
   if (!bucketExists) {
     // Create bucket with public access for project files
     const { error: createError } = await supabase.storage.createBucket(STORAGE_BUCKET, {
       public: false, // Private bucket
       fileSizeLimit: 104857600, // 100MB limit
     });
-    
+
     if (createError) {
       console.error('Error creating storage bucket:', createError);
     } else {
-      console.log('Storage bucket created:', STORAGE_BUCKET);
+      // console.log('Storage bucket created:', STORAGE_BUCKET);
     }
   }
 }
@@ -43,20 +43,20 @@ export async function uploadToStorage(
   contentType: string = 'application/zip'
 ): Promise<string> {
   const supabase = supabaseServiceRole();
-  
+
   await ensureStorageBucket();
-  
+
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .upload(filePath, fileContent, {
       contentType,
       upsert: false,
     });
-  
+
   if (error) {
     throw new Error(`Failed to upload to storage: ${error.message}`);
   }
-  
+
   return data.path;
 }
 
@@ -65,15 +65,15 @@ export async function uploadToStorage(
  */
 export async function downloadFromStorage(filePath: string): Promise<Buffer> {
   const supabase = supabaseServiceRole();
-  
+
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .download(filePath);
-  
+
   if (error) {
     throw new Error(`Failed to download from storage: ${error.message}`);
   }
-  
+
   const arrayBuffer = await data.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
@@ -83,11 +83,11 @@ export async function downloadFromStorage(filePath: string): Promise<Buffer> {
  */
 export async function deleteFromStorage(filePath: string): Promise<void> {
   const supabase = supabaseServiceRole();
-  
+
   const { error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .remove([filePath]);
-  
+
   if (error) {
     throw new Error(`Failed to delete from storage: ${error.message}`);
   }
@@ -98,15 +98,15 @@ export async function deleteFromStorage(filePath: string): Promise<void> {
  */
 export async function getSignedUrl(filePath: string, expiresIn: number = 3600): Promise<string> {
   const supabase = supabaseServiceRole();
-  
+
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)
     .createSignedUrl(filePath, expiresIn);
-  
+
   if (error) {
     throw new Error(`Failed to create signed URL: ${error.message}`);
   }
-  
+
   return data.signedUrl;
 }
 

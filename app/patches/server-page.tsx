@@ -5,7 +5,7 @@ import Link from 'next/link';
 // Server component - fetches data directly from Supabase
 export default async function PatchesServerPage({ searchParams }: { searchParams: { scanId?: string } }) {
   const scanId = searchParams.scanId;
-  
+
   if (!scanId) {
     return (
       <div className="max-w-7xl mx-auto py-8">
@@ -23,10 +23,10 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
       </div>
     );
   }
-  
+
   // Initialize Supabase client
   const supabase = await createSupabaseServerClient();
-  
+
   // Fetch patches for this scan
   const { data: patches, error: patchError } = await supabase
     .from('patches')
@@ -36,7 +36,7 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
     `)
     .eq('scan_id', scanId)
     .order('created_at', { ascending: true });
-  
+
   if (patchError) {
     console.error('Error fetching patches:', patchError);
     return (
@@ -55,7 +55,7 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
       </div>
     );
   }
-  
+
   // Fetch scan details
   const { data: scan, error: scanError } = await supabase
     .from('scans')
@@ -65,17 +65,17 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
     `)
     .eq('id', scanId)
     .single();
-  
+
   if (scanError || !scan) {
     console.error('Error fetching scan:', scanError);
   }
-  
+
   const handleExport = async () => {
     'use server';
     // This would be implemented in a real application
-    console.log('Export functionality would be implemented here');
+    // console.log('Export functionality would be implemented here');
   };
-  
+
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
@@ -117,13 +117,12 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
                   </h3>
                   <div className="flex items-center space-x-4">
                     {patch.vulnerabilities && (
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        patch.vulnerabilities.severity === 'high' 
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200' 
-                          : patch.vulnerabilities.severity === 'medium' 
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200' 
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${patch.vulnerabilities.severity === 'high'
+                          ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
+                          : patch.vulnerabilities.severity === 'medium'
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200'
                             : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200'
-                      }`}>
+                        }`}>
                         {patch.vulnerabilities.severity} severity
                       </span>
                     )}
@@ -138,7 +137,7 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
                   </p>
                 )}
               </div>
-              
+
               <div className="px-4 py-5 sm:p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Before Code */}
@@ -151,7 +150,7 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
                       <code>{patch.before_code || '// No before code available'}</code>
                     </pre>
                   </div>
-                  
+
                   {/* After Code */}
                   <div>
                     <h4 className="text-md font-medium text-gray-900 dark:text-white mb-3 flex items-center">
@@ -163,7 +162,7 @@ export default async function PatchesServerPage({ searchParams }: { searchParams
                     </pre>
                   </div>
                 </div>
-                
+
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <button className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
                     View in Context
