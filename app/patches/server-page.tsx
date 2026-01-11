@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { Download, FileCode, Clock } from 'lucide-react';
 import Link from 'next/link';
 

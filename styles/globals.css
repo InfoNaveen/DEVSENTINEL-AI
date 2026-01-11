@@ -4,14 +4,15 @@
 
 @layer base {
   body {
-    @apply bg-[#0a0e1a] text-gray-100;
-    font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    @apply bg-brand-dark text-gray-100;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
 
-  /* Security grid background */
+  /* Deep space gradient background */
   body::before {
     content: '';
     position: fixed;
@@ -19,44 +20,49 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+    background:
+      radial-gradient(circle at 15% 50%, rgba(112, 0, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(0, 194, 255, 0.15) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
 }
 
 @layer utilities {
-  /* Fluent Design Mica effect */
-  .mica {
-    background: rgba(37, 35, 33, 0.75);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
+
+  /* Modern Glass Effect */
+  .glass-panel {
+    background: rgba(15, 11, 30, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
-  .mica-strong {
-    background: rgba(37, 35, 33, 0.9);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Glassmorphism effect (fallback) */
-  .glass {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(59, 130, 246, 0.1);
+  .glass-card:hover {
+    border-color: rgba(112, 0, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
   }
 
-  .glass-strong {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+  .text-gradient {
+    background: linear-gradient(90deg, #FFFFFF 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-purple {
+    background: linear-gradient(90deg, #c084fc 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* Neon glow effects */
@@ -150,10 +156,13 @@
 
   /* Animated pulse for threats */
   @keyframes threat-pulse {
-    0%, 100% {
+
+    0%,
+    100% {
       opacity: 1;
       transform: scale(1);
     }
+
     50% {
       opacity: 0.8;
       transform: scale(1.05);
@@ -170,9 +179,11 @@
       transform: translateY(-100%);
       opacity: 0;
     }
+
     50% {
       opacity: 1;
     }
+
     100% {
       transform: translateY(100vh);
       opacity: 0;

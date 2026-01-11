@@ -29,7 +29,7 @@ export interface OSINTCollectorConfig {
 export class OSINTCollector {
   private config: OSINTCollectorConfig;
   private projectPath: string;
-  
+
   constructor(config: OSINTCollectorConfig, projectPath: string = process.cwd()) {
     this.config = {
       enableNuclei: config.enableNuclei ?? false,
@@ -38,7 +38,6 @@ export class OSINTCollector {
       nucleiTemplates: config.nucleiTemplates || [],
       nmapScripts: config.nmapScripts || [],
       timeout: config.timeout || 30000, // 30 seconds default
-      ...config
     };
     this.projectPath = projectPath;
   }
@@ -48,20 +47,20 @@ export class OSINTCollector {
    */
   async collect(target: string): Promise<OSINTResult[]> {
     const results: OSINTResult[] = [];
-    
+
     try {
       // Run Nuclei scans if enabled
       if (this.config.enableNuclei) {
         const nucleiResults = await this.runNucleiScan(target);
         results.push(...nucleiResults);
       }
-      
+
       // Run Nmap scans if enabled
       if (this.config.enableNmap) {
         const nmapResults = await this.runNmapScan(target);
         results.push(...nmapResults);
       }
-      
+
       // Run gf patterns if enabled
       if (this.config.enableGf) {
         const gfResults = await this.runGfPatterns(target);
@@ -71,7 +70,7 @@ export class OSINTCollector {
       console.error('OSINT collection error:', error);
       // Return empty results if collection fails
     }
-    
+
     return results;
   }
 
@@ -80,14 +79,14 @@ export class OSINTCollector {
    */
   private async runNucleiScan(target: string): Promise<OSINTResult[]> {
     const results: OSINTResult[] = [];
-    
+
     try {
       // Check if nuclei is installed
       await execPromise('nuclei -version', { timeout: 5000 });
-      
+
       // Prepare nuclei command
       let command = `nuclei -target ${target} -json`;
-      
+
       // Add specific templates if provided
       if (this.config.nucleiTemplates && this.config.nucleiTemplates.length > 0) {
         command += ` -t ${this.config.nucleiTemplates.join(',')}`;
@@ -95,18 +94,18 @@ export class OSINTCollector {
         // Use common templates for web vulnerabilities
         command += ' -t cves, exposures, panels, technologies';
       }
-      
+
       command += ` -timeout ${Math.floor((this.config.timeout || 30000) / 1000)}`;
-      
-      const { stdout, stderr } = await execPromise(command, { 
+
+      const { stdout, stderr } = await execPromise(command, {
         timeout: this.config.timeout,
-        cwd: this.projectPath 
+        cwd: this.projectPath
       });
-      
+
       if (stderr) {
         console.warn('Nuclei scan stderr:', stderr);
       }
-      
+
       if (stdout) {
         const nucleiOutput = stdout.trim().split('\n');
         for (const line of nucleiOutput) {
@@ -133,7 +132,7 @@ export class OSINTCollector {
         console.warn('Nuclei scan failed:', error.message);
       }
     }
-    
+
     return results;
   }
 
@@ -142,25 +141,26 @@ export class OSINTCollector {
    */
   private async runNmapScan(target: string): Promise<OSINTResult[]> {
     const results: OSINTResult[] = [];
-    
+
     try {
       // Check if nmap is installed
       await execPromise('nmap --version', { timeout: 5000 });
-      
+
+      const nmapScripts = this.config.nmapScripts || [];
       // Prepare nmap command with common scripts
-      let command = `nmap -sV --script ${this.config.nmapScripts.length > 0 
-        ? this.config.nmapScripts.join(',') 
+      let command = `nmap -sV --script ${nmapScripts.length > 0
+        ? nmapScripts.join(',')
         : 'vuln,http-enum,http-headers,http-title,http-trace,nmap-vulns,cve'} ${target}`;
-      
-      const { stdout, stderr } = await execPromise(command, { 
+
+      const { stdout, stderr } = await execPromise(command, {
         timeout: this.config.timeout,
-        cwd: this.projectPath 
+        cwd: this.projectPath
       });
-      
+
       if (stderr) {
         console.warn('Nmap scan stderr:', stderr);
       }
-      
+
       if (stdout) {
         results.push({
           type: 'nmap-scan',
@@ -180,7 +180,7 @@ export class OSINTCollector {
         console.warn('Nmap scan failed:', error.message);
       }
     }
-    
+
     return results;
   }
 
@@ -189,26 +189,26 @@ export class OSINTCollector {
    */
   private async runGfPatterns(target: string): Promise<OSINTResult[]> {
     const results: OSINTResult[] = [];
-    
+
     try {
       // Check if gf is installed (part of gf-patterns)
       await execPromise('gf -h', { timeout: 5000 });
-      
+
       // Common gf patterns for vulnerability detection
       const patterns = ['sqli', 'xss', 'lfi', 'rfi', 'redirect', 'rce', 'idor', 'ssti'];
-      
+
       for (const pattern of patterns) {
         try {
           const command = `echo "${target}" | gf ${pattern}`;
-          const { stdout, stderr } = await execPromise(command, { 
+          const { stdout, stderr } = await execPromise(command, {
             timeout: this.config.timeout,
-            cwd: this.projectPath 
+            cwd: this.projectPath
           });
-          
+
           if (stderr) {
             console.warn(`Gf pattern ${pattern} stderr:`, stderr);
           }
-          
+
           if (stdout && stdout.trim()) {
             results.push({
               type: `gf-${pattern}`,
@@ -234,7 +234,7 @@ export class OSINTCollector {
         console.warn('Gf patterns failed:', error.message);
       }
     }
-    
+
     return results;
   }
 
@@ -248,9 +248,9 @@ export class OSINTCollector {
       services: [],
       vulnerabilities: []
     };
-    
+
     const lines = output.split('\n');
-    
+
     for (const line of lines) {
       if (line.includes('Nmap scan report for')) {
         const hostMatch = line.match(/Nmap scan report for (.+)/);
@@ -272,7 +272,7 @@ export class OSINTCollector {
         parsed.vulnerabilities.push(line.trim());
       }
     }
-    
+
     return parsed;
   }
 
@@ -281,15 +281,15 @@ export class OSINTCollector {
    */
   async collectFromSourceCode(sourcePath: string): Promise<OSINTResult[]> {
     const results: OSINTResult[] = [];
-    
+
     // Analyze source code for potential vulnerabilities
     const files = await this.getSourceFiles(sourcePath);
-    
+
     for (const file of files) {
       const filePath = path.join(sourcePath, file);
       try {
         const content = await fs.readFile(filePath, 'utf8');
-        
+
         // Look for potential security issues in the code
         const findings = this.analyzeSourceCode(content, file);
         for (const finding of findings) {
@@ -306,7 +306,7 @@ export class OSINTCollector {
         continue;
       }
     }
-    
+
     return results;
   }
 
@@ -322,11 +322,11 @@ export class OSINTCollector {
   }> {
     const findings = [];
     const lines = content.split('\n');
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const lineNumber = i + 1;
-      
+
       // Check for eval usage
       if (line.includes('eval(')) {
         findings.push({
@@ -337,7 +337,7 @@ export class OSINTCollector {
           confidence: 0.9
         });
       }
-      
+
       // Check for exec usage
       if (line.includes('exec(') || line.includes('spawn(') || line.includes('child_process')) {
         findings.push({
@@ -348,7 +348,7 @@ export class OSINTCollector {
           confidence: 0.8
         });
       }
-      
+
       // Check for hardcoded secrets
       const secretPatterns = [
         /password\s*[:=]\s*['"][^'"]+['"]/i,
@@ -356,7 +356,7 @@ export class OSINTCollector {
         /key\s*[:=]\s*['"][^'"]+['"]/i,
         /token\s*[:=]\s*['"][^'"]+['"]/i
       ];
-      
+
       for (const pattern of secretPatterns) {
         if (pattern.test(line)) {
           findings.push({
@@ -368,7 +368,7 @@ export class OSINTCollector {
           });
         }
       }
-      
+
       // Check for SQL injection patterns
       if (this.containsSQLPattern(line)) {
         findings.push({
@@ -379,7 +379,7 @@ export class OSINTCollector {
           confidence: 0.7
         });
       }
-      
+
       // Check for XSS patterns
       if (this.containsXSSPattern(line)) {
         findings.push({
@@ -391,7 +391,7 @@ export class OSINTCollector {
         });
       }
     }
-    
+
     return findings;
   }
 
@@ -409,7 +409,7 @@ export class OSINTCollector {
       /execute.*\+.*\(/i,
       /sql.*\+.*=/i
     ];
-    
+
     return sqlPatterns.some(pattern => pattern.test(line));
   }
 
@@ -426,7 +426,7 @@ export class OSINTCollector {
       /setTimeout\(.*\+.*\)/i,
       /setInterval\(.*\+.*\)/i
     ];
-    
+
     return xssPatterns.some(pattern => pattern.test(line));
   }
 
@@ -436,15 +436,15 @@ export class OSINTCollector {
   private async getSourceFiles(dir: string): Promise<string[]> {
     const files: string[] = [];
     const extensions = ['js', 'ts', 'jsx', 'tsx', 'py', 'php', 'rb', 'java', 'cpp', 'cs', 'go', 'rust'];
-    
+
     const walk = async (currentDir: string) => {
       try {
         const entries = await fs.readdir(currentDir, { withFileTypes: true });
-        
+
         for (const entry of entries) {
           const fullPath = path.join(currentDir, entry.name);
           const relativePath = path.relative(dir, fullPath);
-          
+
           if (entry.isDirectory()) {
             // Skip node_modules and other common directories
             if (!['node_modules', '.git', 'dist', 'build', '.next', 'coverage', 'vendor'].includes(entry.name)) {
@@ -461,7 +461,7 @@ export class OSINTCollector {
         // Silently ignore errors for files that can't be accessed
       }
     };
-    
+
     await walk(dir);
     return files;
   }

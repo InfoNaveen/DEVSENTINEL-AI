@@ -1,16 +1,17 @@
+require('dotenv').config({ path: '.env.local' });
 const { scanProject } = require('./dist/sentinel');
 
 async function testScanner() {
   try {
     console.log('Testing DevSentinel AI scanner...');
-    
+
     // Scan the test project
     const result = await scanProject('./tmp/devsentinel/test-project');
-    
+
     console.log('Scan Results:');
     console.log('Findings:', JSON.stringify(result.findings, null, 2));
     console.log('Patches:', JSON.stringify(result.patches, null, 2));
-    
+
     console.log('Test completed successfully!');
   } catch (error) {
     console.error('Test failed:', error);
