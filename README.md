@@ -1,194 +1,91 @@
-
 # DevSentinel AI — Secure-by-Design Autonomous Development Platform
 
-DevSentinel AI is a next-generation autonomous development platform that transforms user stories and code repositories into secure, deployable applications using a collaborative multi-agent LLM workflow. It scans repositories, detects vulnerabilities, applies auto-patches, and provides an enterprise-grade dashboard for full security visibility.
+DevSentinel AI autonomously scans, detects, and patches security issues in code repositories using a multi-agent LLM pipeline. This repository contains the prototype application and Sentinel scanning engine used for demos and research.
 
-<a href="https://devsentinel-ai.vercel.app" target="_blank">
-  <svg width="100%" height="150" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="g" x1="0" x2="1">
-        <stop offset="0" stop-color="#0ea5a4"/>
-        <stop offset="1" stop-color="#7c3aed"/>
-      </linearGradient>
-    </defs>
-    <rect width="1200" height="300" rx="16" fill="url(#g)"/>
-    <text x="60" y="110" font-family="Segoe UI, Roboto, Arial" font-size="44" fill="#fff" font-weight="700">DevSentinel AI</text>
-    <text x="60" y="160" font-family="Segoe UI, Roboto, Arial" font-size="18" fill="#f0f9f9">Secure-by-design autonomous development — Try the live demo</text>
-    <rect x="60" y="185" rx="8" width="190" height="44" fill="#000" opacity="0.14"/>
-    <a href="https://devsentinel-ai.vercel.app"><text x="80" y="213" font-family="Segoe UI, Roboto, Arial" font-size="16" fill="#fff">▶ Try Live Demo</text></a>
-    <g transform="translate(1040,60)">
-      <!-- small vercel-like triangle -->
-      <polygon points="30,0 60,52 0,52" fill="#fff"/>
-    </g>
-  </svg>
-</a>
-
+**Live demo:** previously hosted on Vercel (devsentinel-ai.vercel.app) — currently unavailable. The README has been updated to remove the broken direct link.
 
 ---
 
 ## 🔥 Key Capabilities
 
-### 🧠 Multi-Agent Architecture
-DevSentinel AI uses four collaborating agents:
-
-- **Architect Agent** — Converts Azure DevOps user stories into architecture plans  
-- **Builder Agent** — Generates initial full-stack code  
-- **Critic Agent** — Produces test stubs and basic validation  
-- **Sentinel Agent** — Performs security scanning and automated patching  
-
-The prototype demonstrates the Sentinel module fully, with partial integration for Architect/Builder/Critic via LLM workflows.
+- Multi-agent pipeline (Architect → Builder → Critic → Sentinel)
+- Security scanning (pattern + LLM-assisted analysis)
+- Automated patch suggestions and patch diff viewer
+- GitHub integration for creating PRs with fixes
 
 ---
 
 ## 🛡️ Core Features
 
-### Enterprise Security Dashboard
-- Modern sidebar & navbar  
-- Dark mode optimized  
-- Fully responsive  
-- Built with Next.js 14 + Tailwind + shadcn/ui  
-
-### Upload & Scan
-- Drag-and-drop ZIP upload  
-- GitHub repo ingestion  
-- Real-time scanning feedback  
-
-### Security Findings & Auto-Patching
-- Severity-based vulnerability cards  
-- Detailed findings table  
-- Patch diff viewer  
-- Export patched repo as ZIP  
-
-### Security Timeline
-- Chronological scan history  
-- Patch events  
-- Security posture trends  
-
-### Agent Orchestration (MVP)
-- Sequential flow (Architect → Builder → Critic → Sentinel)  
-- Agent execution logs  
-- Builder/Critic sample outputs  
+- Enterprise-style dashboard (Next.js + Tailwind)
+- Upload & scan (ZIP upload, GitHub repo ingestion)
+- Vulnerability reporting and timeline
+- Patch export and commit automation
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (high-level)
 
-```
-
-app/
-├── layout.tsx
-├── page.tsx
-├── upload/
-├── scan-results/
-├── timeline/
-├── patches/
-├── settings/
-└── test-components/
-
-components/
-├── Sidebar.tsx
-├── Navbar.tsx
-├── ScanContext.tsx
-├── VulnerabilityCard.tsx
-├── VulnerabilityTable.tsx
-├── Timeline.tsx
-├── PatchDiff.tsx
-└── LoadingSkeletons.tsx
-
-lib/
-├── sentinel.ts
-├── orchestrator.ts
-├── extractZip.ts
-├── github.ts
-└── supabase.ts
-
-app/api/
-├── upload/
-├── scan/
-├── patch/
-└── commit/
-
-```
+app/ — Next.js App Router pages and API routes
+components/ — shared UI components
+lib/ — core scanning, orchestration and helpers
+services/ — offensive/red-team validation tools (demo)
+supabase/ — example DB schema
 
 ---
 
 ## 🧪 Tech Stack
 
-- **Framework:** Next.js 14 (App Router)  
-- **Language:** TypeScript  
-- **UI:** Tailwind CSS, shadcn/ui, Lucide icons  
-- **State:** React Context API  
-- **Deployment:** Vercel  
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS, shadcn/ui
+- Supabase (backend demo)
 
 ---
 
-## 🚀 Getting Started Locally
+## 🚀 Getting Started (local)
 
-Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-Run development server:
+2. Create `.env.local` from the example and fill required keys (do not commit secrets):
+
+```bash
+cp .env.local.example .env.local
+```
+
+3. Run dev server:
 
 ```bash
 npm run dev
 ```
 
-Project runs at:
-
-**[http://localhost:3000](http://localhost:3000)**
-
-### Production Build
-
-```bash
-npm run build
-npm start
-```
+Open http://localhost:3000
 
 ---
 
-## 🔧 Deploying to Vercel
+## 🔧 Deployment
 
-This project is fully compatible with **Vercel's Next.js 14 App Router environment**.
-
-### **Automatic Deployment (Recommended)**
-
-1. Push your code to GitHub
-2. Go to [https://vercel.com](https://devsentinel-ai.vercel.app/)
-3. Import your GitHub repository
-4. Vercel auto-detects the Next.js config
-5. Click **Deploy**
-
-### **Manual Deployment Using Vercel CLI**
-
-```bash
-npm install -g vercel
-vercel login
-vercel            # preview deployment
-vercel --prod     # production deployment
-```
-
-If Vercel fails to deploy, check:
-
-* Missing dependencies in `package.json`
-* Invalid `.env` files
-* Mismatched or broken markdown blocks
-* Incorrect import paths
-* Server route errors under `/app/api/*`
+This project is compatible with Vercel, but the public demo is currently offline. To deploy yourself, use Vercel or any Node-compatible host and set environment variables in the host's dashboard.
 
 ---
 
-## 📌 Development Guidelines
+## 🔒 Security notes
 
-* Dark mode support throughout
-* Mobile-first responsive design
-* Tailwind + shadcn for consistent UI
-* TypeScript strict mode enabled
-* Sentinel scanning logic located in `/lib/sentinel.ts`
-* DO NOT commit `.env` files or secrets
+- Do not commit `.env*` or secrets into git. Rotate keys if they are accidentally committed.
+- The repository contains demo/vulnerable artifacts used for testing. Review and remove these before production use.
+- Avoid embedding tokens in commands (see `app/api/upload/route.ts`) and ensure any GitHub tokens are handled via secure auth flows.
 
+---
+
+## License & Acknowledgements
+
+This prototype was created for Techfest IIT Bombay AutoDev Hackathon. See the `LICENSE` file for details.
+
+Acknowledgements: OWASP, Azure OpenAI, NeuroSploit-inspired research, Supabase.
 
 
 ## 📄 License
