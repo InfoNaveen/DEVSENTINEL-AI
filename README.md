@@ -328,7 +328,7 @@ Check that the server has read/write permissions on the working directory and th
 
 ## License
 
-All rights reserved. This project was created for the **Techfest IIT Bombay AutoDev Hackathon** and is not licensed for open-source or production use. See `LICENSE` for details.
+DevSentinel AI is a multi-agent autonomous security scanning prototype initially built during IIT Bombay Techfest and further evolved for ongoing innovation tracks.
 
 ---
 
